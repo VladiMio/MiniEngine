@@ -9,12 +9,18 @@ static float G = 0.3f;
 static float B = 0.2f;
 static float alphe = 1.0f;
 
-
 float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f,  0.5f, 0.0f
+	0.5f,  0.5f, 0.0f,  // top right
+	0.5f, -0.5f, 0.0f,  // bottom right
+	-0.5f, -0.5f, 0.0f,  // bottom left
+	-0.5f,  0.5f, 0.0f,   // top left 
+	0.0f, 0.5f, -0.5f
 };
+unsigned int indices[] = {  // note that we start from 0!
+	1, 2, 4,   // first triangle
+	1, 2, 3    // second triangle
+};
+
 const char *vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
 "void main()\n"
@@ -103,20 +109,32 @@ int main()
 #pragma endregion
 
 
-	//Create VAO and VBO
-	unsigned int VAO, VBO;
+	// Create VAO and VBO
+	unsigned int VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
+	// Bind VAO
 	glBindVertexArray(VAO);
-
+	// Bind VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	// Insert vertices into VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// Tell OpenGL how to interpret the vertex data: 
+	// starts at 0, 3 attribute per vertex,
+	// data type is GL_FLOAT,
+	// do not normalize, 
+	// stride(the space between consecutive vertex attribute sets),
+	// offset of where the position data begins in the buffer
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -124,13 +142,11 @@ int main()
 
 		glClearColor(R, G, B, alphe);
 		glClear(GL_COLOR_BUFFER_BIT);
-		///
 		
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		///
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -10,15 +10,47 @@ static float B = 0.2f;
 static float alphe = 1.0f;
 
 float vertices[] = {
-	0.5f,  0.5f, 0.0f,  // top right
-	0.5f, -0.5f, 0.0f,  // bottom right
-	-0.5f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f,   // top left 
-	0.0f, 0.5f, -0.5f
+	-0.5f, -0.5f, 0.0f,
+	0.0f, -0.5f, 0.0f,
+	0.0f, 0.5f, 0.0f,
+	0.5f, -0.5f, 0.0f
+	//0.5f,  0.5f, 0.5f,  
+	//0.5f, -0.5f, 0.5f,  
+	//-0.5f, -0.5f, 0.5f, 
+	//-0.5f,  0.5f, 0.5f, 
+	//0.5f,  0.5f, -0.5f,
+	//0.5f, -0.5f, -0.5f,
+	//-0.5f, -0.5f, -0.5f,
+	//-0.5f,  0.5f, -0.5f,
+	//0.0f, 0.5f, -0.5f
 };
-unsigned int indices[] = {  // note that we start from 0!
-	1, 2, 4,   // first triangle
-	1, 2, 3    // second triangle
+unsigned int indices[] = {  
+	0, 1, 2,
+	1, 2, 3, 
+	// note that we start from 0!
+	//1, 2, 4,   // first triangle
+	//1, 2, 3    // second triangle
+	//0,1,2,
+	//0,1,3,
+	//0,1,4,
+	//0,1,5,
+	//0,1,6,
+	//0,1,7,
+	//0,2,3,
+	//0,2,4,
+	//0,2,5,
+	//0,2,6,
+	//0,2,7,
+	//0,3,4,
+	//0,3,5,
+	//0,3,6,
+	//0,3,7,
+	//0,4,5,
+	//0,4,6,
+	//0,4,7,
+	//0,5,6,
+	//0,5,7,
+	//0,6,7,
 };
 
 const char *vertexShaderSource = "#version 330 core\n"
@@ -145,7 +177,7 @@ int main()
 		
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);

@@ -20,6 +20,8 @@ unsigned int indices[] = {  // note that we start from 0!
 	1, 2, 3    // second triangle
 };
 
+
+
 const char *vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
 "void main()\n"

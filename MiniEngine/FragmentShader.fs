@@ -1,8 +1,8 @@
-"#version 330 core              \n"
-"out vec4 FragColor;            \n"
-"                               \n"
-"in vec4 vertexColor;           \n"
-"void main()                    \n"
-"{                              \n"
-"    FragColor = vertexColor;   \n"
-"}                              \n"
+#version 330 core
+out vec4 FragColor;  
+in vec3 ourColor;
+  
+void main()
+{
+    FragColor = vec4(ourColor, 1.0);
+}

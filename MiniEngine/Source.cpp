@@ -11,9 +11,10 @@ static float R = 0.2f;
 static float G = 0.3f;
 static float B = 0.3f;
 static float alphe = 1.0f;
+static float testfloat = 0.2f;
 
 float vertices[] = {
-	// positions          // colors           // texture coords
+	// positions          // colors           // texture coords (note that we changed them to 2.0f!)
 	0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f, // top right
 	0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, // bottom right
 	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
@@ -101,8 +102,8 @@ int main()
 	// set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	// load and generate the texture
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
@@ -158,6 +159,7 @@ int main()
 		//float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		ourShader.setFloat("alpha", testfloat);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
@@ -207,10 +209,9 @@ void processInput(GLFWwindow *window)
 			B = 0.0f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		if (alphe > 0.0f)
+		if (testfloat > 0.0f)
 			alphe -= 0.01f;
 		else
 			alphe = 1.0f;
 	}
-
 }

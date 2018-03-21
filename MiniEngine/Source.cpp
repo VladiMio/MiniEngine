@@ -2,6 +2,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <Shader.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -12,17 +15,20 @@ static float G = 0.3f;
 static float B = 0.3f;
 static float alphe = 1.0f;
 static float testfloat = 0.2f;
+static float ang = 90.0f;
+static float s1 = 0.0f;
+static float s2 = 0.0f;
 
 float vertices[] = {
 	// positions          // colors           // texture coords (note that we changed them to 2.0f!)
-	0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f, // top right
-	0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, // bottom right
+	0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+	0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
 	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 2.0f  // top left 
+	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
 };
 unsigned int indices[] = {  // note that we start from 0!
 	0, 1, 3,   // first triangle
-	1, 2, 3    // second triangle
+	1, 2, 3,    // second triangle
 };
 
 
@@ -143,6 +149,13 @@ int main()
 	stbi_image_free(data);
 
 #pragma endregion
+
+#pragma region translation 
+
+
+
+#pragma endregion
+	
 	ourShader.use();
 	glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
 	ourShader.setInt("texture2", 1);
@@ -153,10 +166,36 @@ int main()
 
 		glClearColor(R, G, B, alphe);
 		glClear(GL_COLOR_BUFFER_BIT);
-		
 
-		//float timeValue = glfwGetTime();
-		//float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		//First
+		glm::mat4 trans;
+		trans = glm::translate(trans, glm::vec3(s1, s2, 0.0));
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		ourShader.setFloat("alpha", testfloat);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
+		ourShader.use();
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+		//Second
+		trans = glm::mat4(); // reset it to an identity matrix
+		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+		float scaleAmount = sin(glfwGetTime());
+		trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans)); // this time take the matrix value array's first element as its memory pointer value
+
+
 		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 		ourShader.setFloat("alpha", testfloat);
@@ -191,27 +230,35 @@ void processInput(GLFWwindow *window)
 		glfwSetWindowShouldClose(window, true);
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		if (R < 1.0f)
-			R += 0.01f;
-		else
-			R = 0.0f;
+		if (s2 < 1.0) {
+			s2 += 0.01f;
+		}
+		else {
+			return;
+		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		if (G < 1.0f)
-			G += 0.01f;
-		else
-			G = 0.0f;
+		if (s1 < 1.0) {
+			s1 += 0.01f;
+		}
+		else {
+			return;
+		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		if (B < 1.0f)
-			B += 0.01f;
-		else
-			B = 0.0f;
+		if (s1 > 0.0) {
+			s1 -= 0.01f;
+		}
+		else {
+			return;
+		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		if (testfloat > 0.0f)
-			alphe -= 0.01f;
-		else
-			alphe = 1.0f;
+		if (s2 > 0.0) {
+			s2 -= 0.01f;
+		}
+		else {
+			return;
+		}
 	}
 }

@@ -18,6 +18,9 @@ const unsigned int SCR_HEIGHT = 600;
 float deepth = -3.0f;
 
 float lastX = 400, lastY = 300;
+float yaw = 0, pitch = 0;
+
+bool firstMouse = true;
 
 float vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -326,6 +329,13 @@ void processInput(GLFWwindow *window)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+	if (firstMouse) // 这个bool变量初始时是设定为true的
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // 注意这里是相反的，因为y坐标是从底部往顶部依次增大的
 	lastX = xpos;
@@ -334,4 +344,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	float sensitivity = 0.05f;
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+	front.y = sin(glm::radians(pitch));
+	front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+	cameraFront = glm::normalize(front);
 }
